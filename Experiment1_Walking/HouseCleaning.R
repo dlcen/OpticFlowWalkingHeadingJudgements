@@ -129,10 +129,10 @@ if (length(TrialNo) > 0) {
       for ( i in 1:length(TrialNo)){
               thisSubject <- outliers[i]
               thisTrial <- TrialNo[i]
-              if (thisTrial > 4) {
-                      idx <- which(trial.meanErr.long$SubjectNo == thisSubject & trial.meanErr.long$TotalTrialNo == thisTrial)
-                      trial.meanErr.long$meanErr[idx] <- NA
-              }
+              # if (thisTrial > 4) {
+              idx <- which(trial.meanErr.long$SubjectNo == thisSubject & trial.meanErr.long$TotalTrialNo == thisTrial)
+              trial.meanErr.long$meanErr[idx] <- NA
+              # }
               if ( i >= 2 ) {
                 if (thisSubject == outliers[i - 1] & thisTrial == TrialNo[i - 1] + 1) {
                   too.many.missing <- c(too.many.missing, thisSubject)
