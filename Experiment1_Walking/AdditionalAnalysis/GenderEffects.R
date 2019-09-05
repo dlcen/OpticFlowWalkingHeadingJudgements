@@ -117,3 +117,4 @@ ggplot(female.meanErr.comb.long, aes(x = meanErr)) +
 
 ggsave("figures/CombHistgram.png", width=16, height=16, units = "cm") 
 
+  
