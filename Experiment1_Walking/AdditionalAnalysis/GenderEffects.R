@@ -1,4 +1,4 @@
-library(data.table); library(ggplot2); library(showtext); library(Hmisc); library(cowplot); 
+library(data.table); library(ggplot2); library(showtext); library(Hmisc); library(cowplot); library(reshape)
 
 load("Data/GenderAnalysis.RData")
 
@@ -81,7 +81,39 @@ legend   <- get_legend(err.trial1)
 p        <- plot_grid( prow, legend, ncol = 1, rel_heights = c(3, 0.2))
 p
 
-
 ggsave("figures/GenderEffectsOnTrjsAndTHAs.png", width=32, height=16, units = "cm") 
 
+
+# Check the position of male (n = 7) mean in the distribution of female (n = 7) means.
+
+## Calculating random combinations in MATLAB
+offset.meanErr <- trial.meanErr.4m[Block %in% c(2, 4, 6, 8) & TrialNo == 1]
+female.meanErr <- offset.meanErr[Gender == "Female"]
+write.csv(female.meanErr, file = "Data/Female_Trial1_MeanErr_4m.csv", row.names = F)
+
+male.meanErr <- offset.meanErr[Gender == "Male"]
+male.meanErr.Mean <- male.meanErr[, .(meanErr = mean(meanErr, na.rm = T)), by = c("Scene")]
+
+## Read combinations in MATLAB
+female.meanErr.comb <- read.csv("Data/Female_Trial1_MeanErr_Combinations.csv", header = T)
+female.meanErr.comb$CombNo <- c(1:nrow(female.meanErr.comb))
+female.meanErr.comb.long <- melt(female.meanErr.comb, id = "CombNo")
+names(female.meanErr.comb.long) <- c('CombNo', 'Scene', 'meanErr')
+
+female.meanErr.comb.long <- data.table(female.meanErr.comb.long)
+female.meanErr.comb.mean <- female.meanErr.comb.long[, .(meanErr = mean(meanErr, na.rm = T), std = sd(meanErr, na.rm = T)), by = c("Scene")]
+female.meanErr.comb.mean[, err := qnorm(0.975)*std/sqrt(nrow(female.meanErr.comb)), by = c("Scene")]
+female.meanErr.comb.mean[, ci_up := meanErr + err, by = c("Scene")]
+female.meanErr.comb.mean[, ci_dn := meanErr - err, by = c("Scene")]
+
+## Plot the histgrams
+ggplot(female.meanErr.comb.long, aes(x = meanErr)) +
+  geom_histogram(bins = 50, color = "black", fill = "grey50", alpha = 0.5) +
+  geom_vline(data = female.meanErr.comb.mean, aes(xintercept = meanErr), color = "black", size = 1) +
+  geom_rect(data = female.meanErr.comb.mean, mapping=aes(xmin=ci_dn, xmax=ci_up, ymin=Inf, ymax=-Inf), color="grey50", alpha=0.1) +
+  geom_vline(data = male.meanErr.Mean, aes(xintercept = meanErr), color = "red", linetype = "dashed", size = 1 ) +
+  facet_wrap(~ Scene) + 
+  labs(x = "Average mean target-heading angle (degree)") 
+
+ggsave("figures/CombHistgram.png", width=16, height=16, units = "cm") 
 
