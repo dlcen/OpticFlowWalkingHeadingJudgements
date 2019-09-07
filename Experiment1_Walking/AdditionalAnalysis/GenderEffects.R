@@ -9,7 +9,7 @@ offset.segData <- segData_aligned[Block %in% c(2, 4, 6, 8)]
 # offset.segMean <- offset.segData[, .(headingErr = mean(headingErr, na.rm = T)), by = c("SubjectNo", "Scene", "Block", "seg.z", "segNo", "Gender")]
 
 offset.segData$Scene <- droplevels(offset.segData$Scene)
-offset.segData$Scene <- factor(offset.segData$Scene, levels = levels(offset.segData$Scene)[c(2, 3, 1, 4)], labels = c("Cloud", "Line", "Outline", "Room"))
+offset.segData$Scene <- factor(offset.segData$Scene, levels = levels(offset.segData$Scene)[c(2, 3, 1, 4)], labels = c("Line", "Outline", "Cloud", "Room"))
 
 # droplevels(offset.segMean$Scene)
 # offset.segMean$Scene <- factor(offset.segMean$Scene, labels = c("Cloud", "Line", "Outline", "Room"))
