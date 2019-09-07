@@ -81,16 +81,16 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 	figure
 	hold on
 	box on
-	quiver(atand(image_data_Rt(:, 1)), atand(image_data_Rt(:, 2)), scale * image_data_Rt(:, 3), scale * image_data_Rt(:, 4), 0, 'Color', [.75 .75 .75], 'MaxHeadSize', .1, 'LineWidth', .75)
+	quiver(atand(image_data_Rt(:, 1)), atand(image_data_Rt(:, 2)), scale * image_data_Rt(:, 3), scale * image_data_Rt(:, 4), 0, 'Color', [.5 .5 .5], 'MaxHeadSize', .1, 'LineWidth', 1)
 
 	if size(differential_data, 1) > 1
-	    quiver(atand(differential_data(:, 1)), atand(differential_data(:, 2)), scale * differential_data(:, 3), scale * differential_data(:, 4), 0, 'Color', 'r', 'MaxHeadSize', 1, 'LineWidth', 1.5) %[.8 .4 0]
+	    quiver(atand(differential_data(:, 1)), atand(differential_data(:, 2)), scale * differential_data(:, 3), scale * differential_data(:, 4), 0, 'Color', 'r', 'MaxHeadSize', 1, 'LineWidth', 2.5) 
 	end
 
 	gazeat = 0;
-	scatter(gazeat, 0, 50, [0.3010, 0.7450, 0.9330], 'filled')
-	plot([dev_ang - cross_size; dev_ang + cross_size], [0; 0], 'color', [0.4660, 0.6740, 0.1880], 'LineWidth', 2)
-	plot([dev_ang; dev_ang], [-cross_size; cross_size], 'color', [0.4660, 0.6740, 0.1880], 'LineWidth', 2)
+	scatter(gazeat, 0, 150, [0, 0.4, 1], 'filled')
+	plot([dev_ang - cross_size; dev_ang + cross_size], [0; 0], 'color', [0.4078    0.6235    0.2196], 'LineWidth', 4)
+	plot([dev_ang; dev_ang], [-cross_size; cross_size], 'color', [0.4078    0.6235    0.2196], 'LineWidth', 4)
 
 	xlim([-img_w/2 img_w/2])
 	ylim([-img_h/2 img_h/2])
