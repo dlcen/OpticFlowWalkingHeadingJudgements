@@ -75,6 +75,8 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 
 	differential_data = Cal_motion_parallax_local_differential(image_data_Rt, tand(closeness_threshold));
 
+	fprintf('In the %s condition there are %d pairs of motion parallax.\n', thisCondition, size(differential_data, 1));
+
 	scale = 30;
 	cross_size = 2;
 
