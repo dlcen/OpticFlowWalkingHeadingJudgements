@@ -13,7 +13,7 @@ quartiles$lb   <- quartiles$Eccentricity + quartiles$EccentricityWidth
 # Plot the quartiles
 ggplot(data = quartiles, aes(x = Eccentricity, y = Mean)) +
 	geom_rect(mapping = aes(xmin = rb, xmax = lb, ymin = q_dn, ymax = q_up), color = NA, fill = "grey30", alpha = 0.5) +
-	geom_point(size = 3, color = "black") + 
+	geom_point(size = 2, color = "black") + 
 	facet_wrap( ~ Scene, ncol = 2) +
 	labs( x = 'Eccentricity (degree)', y = 'Mean speed magnitude (degree/s)')
 
