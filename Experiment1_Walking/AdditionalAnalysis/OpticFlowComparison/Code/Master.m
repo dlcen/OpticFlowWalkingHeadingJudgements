@@ -10,8 +10,6 @@ img_h = 50;
 vf_x = tand(img_w/2);
 vf_y = tand(img_h/2);
 
-T = [0, 0, 1];
-
 pF = 1/(6 - dz); % the distance to the target after one frame
 
 dev_ang = 10;
@@ -22,37 +20,47 @@ Rr = [0, -pF*Tr(1), 0]; % calculating the rotational component
 load(['../', thisCondition, '/dotPosition.mat'])
 
 %% Calculate and plot the flow field
+%  Gaze to the direction of moving
+image_data_Tr = Cal_Image_Vectors(dotPosition, Tr, 0, img_w, img_h);
+
 %  Gaze fixed on the target while moving
-image_data = Cal_Image_Vectors(dotPosition, Tr, pF, img_w, img_h);
+image_data_Rt = Cal_Image_Vectors(dotPosition, Tr, pF, img_w, img_h);
 
-image_data(:, 11) = atand(image_data(:, 5));
+%% Plot the distribution of magnitude of speed vectors as a function of x-axis
+image_data_Tr(:, 11) = abs(atand(image_data_Tr(:, 3)));
 
-%% Plot the vector field
+target_idx = find(image_data_Tr(:, 11) == 0 & image_data_Tr(:, 1) < 0.25/6 & image_data_Tr(:, 1) > -0.25/6);
+
+target_data = image_data_Tr(target_idx, :);
+[scene_data, ~] = setdiff(image_data_Tr, target_data, 'rows');
+
 figure
-scatter3(atand(image_data(:, 1)), atand(image_data(:, 2)), image_data(:, 11), 100, image_data(:, 11), 'filled'); colormap jet; colorbar; caxis([0 25])
+hold on
+scatter3(atand(scene_data(:, 1)), atand(scene_data(:, 2)), scene_data(:, 11), 50, [.5 .5 .5], 'filled')
+scatter3(atand(target_data(:, 1)), atand(target_data(:, 2)), target_data(:, 11), 50, [255/255, 191/255, 0], 'filled')
 xlim([-img_w/2 img_w/2])
 ylim([-img_h/2 img_h/2])
 zlim([0 25])
 set(gca, 'Ylabel', [])
 set(gca, 'Xlabel', [])
 set(gca, 'fontsize', 24)
-view(0, 90)
+view(0, 0)
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
-h = colorbar;
+colorbar('off')
 box on
 grid off
-set(h, 'ylim', [0 25])
 set(gca, 'color', 'none')
 set(gcf, 'color', 'none')
 
-savefig(['../', thisCondition, 'Figures/SpeedMagnitudeField'])
-print(['../', thisCondition, 'Figures/SpeedMagnitudeField'], '-dsvg')
+savefig(['../', thisCondition, 'Figures/SpeedMagnitudeDistribution'])
+print(['../', thisCondition, 'Figures/SpeedMagnitudeDistribution'], '-dsvg')
+
 
 %% Calculate the motion parallax
 closeness_threshold = 0.2 * sqrt(2);
 
 % differential_data = Cal_motion_parallax_local_differential(valid_grid_data, atand(closeness_threshold));
-differential_data = Cal_motion_parallax_local_differential_seq_raw(image_data, tand(closeness_threshold));
+differential_data = Cal_motion_parallax_local_differential(image_data_Rt, tand(closeness_threshold));
 
 % small_threshold = closeness_threshold * Tr(3);
 % 
@@ -66,12 +74,11 @@ differential_data = Cal_motion_parallax_local_differential_seq_raw(image_data, t
 scale = 30;
 cross_size = 2;
 
-
 figure
 hold on
 box on
-quiver(atand(image_data(:, 1)), atand(image_data(:, 2)), scale * image_data(:, 3), scale * image_data(:, 4), 0, 'Color', [.75 .75 .75], 'MaxHeadSize', .1, 'LineWidth', .75)
-% scatter(atand(image_data(:, 1)), atand(image_data(:, 2)), 1, 'MarkerEdgeColor', [0.5, 0.5, 0.5], 'MarkerEdgeAlpha', .5)
+quiver(atand(image_data_Rt(:, 1)), atand(image_data_Rt(:, 2)), scale * image_data_Rt(:, 3), scale * image_data_Rt(:, 4), 0, 'Color', [.75 .75 .75], 'MaxHeadSize', .1, 'LineWidth', .75)
+
 if size(differential_data, 1) > 1
     quiver(atand(differential_data(:, 1)), atand(differential_data(:, 2)), scale * differential_data(:, 3), scale * differential_data(:, 4), 0, 'Color', 'r', 'MaxHeadSize', 1, 'LineWidth', 1.5) %[.8 .4 0]
 end
@@ -83,8 +90,6 @@ plot([dev_ang; dev_ang], [-cross_size; cross_size], 'color', [0.4660, 0.6740, 0.
 
 xlim([-img_w/2 img_w/2])
 ylim([-img_h/2 img_h/2])
-% xlabel('Retinal X [\circ]')
-% ylabel('Retinal Y [\circ]')
 set(gca, 'Ylabel', [])
 set(gca, 'Xlabel', [])
 set(gca, 'fontsize', 24)
@@ -92,16 +97,10 @@ set(gca,'color','none')
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14])
 set(gca, 'color', 'none')
 set(gcf, 'color', 'none')
-% set(gca, 'color', [0 0 0],'Xcolor','w','Ycolor','w');
-% set(gcf, 'color', [0 0 0]);
-% set(gca, 'XTick', (-45:15:45), 'YTick', [-25:5:25])
-% set(gcf, 'InvertHardCopy', 'off')
-
-if ~exist('Figures', 'dir'); mkdir('Figures'); end
 
 savefig('Figures/Motion_parallax_rotation_lite')
-% print('Figures/Motion_parallax_rotation_lite', '-dsvg')
-% print('Figures/Motion_parallax_rotation_lite', '-dpng', '-r300')
+print('Figures/Motion_parallax_rotation_lite', '-dsvg')
+print('Figures/Motion_parallax_rotation_lite', '-dpng', '-r300')
 
 
 
