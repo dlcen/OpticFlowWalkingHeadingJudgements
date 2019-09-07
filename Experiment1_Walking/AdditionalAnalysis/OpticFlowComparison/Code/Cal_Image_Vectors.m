@@ -19,8 +19,6 @@ function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 	image_y = env_dots(:, 2)./env_dots(:, 3);
 
 	% Calculate the velocity elements on the x-axis and y-axis on the image plane
-	% image_vx = (env_dots(:, 1).* T(3) - env_dots(:, 3).* T(1))./env_dots(:, 3).^2;
-	% image_vy = (env_dots(:, 2).* T(3) - env_dots(:, 3).* T(2))./env_dots(:, 3).^2;
 	image_vx = (env_dots(:, 1).* T(3) - env_dots(:, 3).* T(1) + T(1) * pF * (env_dots(:, 1).^2 + env_dots(:, 3).^2))./env_dots(:, 3).^2;
 	image_vy = (env_dots(:, 2).* T(3) - env_dots(:, 3).* T(2) + T(1) * pF * (env_dots(:, 1) .* env_dots(:, 2)))./env_dots(:, 3).^2;
     
@@ -65,6 +63,8 @@ function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 	image_data(:, 6) = sp_noise;
 	image_data(:, 7) = image_dir;
 	image_data(:, 8) = dir_noise;
+    image_data(:, 9) = env_dots(:, 4);
+    image_data(:, 10) = env_dots(:, 3); 
 
 	% Exclude those outside the vision
 	vf_x = tand(img_w/2); vf_y = tand(img_h/2);
