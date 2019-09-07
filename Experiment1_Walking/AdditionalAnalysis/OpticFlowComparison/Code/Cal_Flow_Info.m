@@ -71,7 +71,7 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 
 
 	%% Calculate the motion parallax
-	closeness_threshold = 0.2 * sqrt(2);
+	closeness_threshold = 0.2 * sqrt(2); % define a distance threshold - under the threshold the two dots are so close to each other that they can be seen to be overlayed on the image plane.
 
 	differential_data = Cal_motion_parallax_local_differential(image_data_Rt, tand(closeness_threshold));
 
