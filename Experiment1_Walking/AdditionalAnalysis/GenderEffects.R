@@ -118,3 +118,28 @@ ggplot(female.meanErr.comb.long, aes(x = meanErr)) +
 ggsave("figures/CombHistgram.png", width=16, height=16, units = "cm") 
 
   
+## Determining the percentile
+### Line
+percentile <- ecdf(female.meanErr.comb$Line)
+percentile(male.meanErr.Mean[Scene == "Line"]$meanErr)
+# 0.96985
+
+### Outline
+percentile <- ecdf(female.meanErr.comb$Outline)
+percentile(male.meanErr.Mean[Scene == "Outline"]$meanErr)
+# 0.6904
+
+### Cloud
+percentile <- ecdf(female.meanErr.comb$DotCloud)
+percentile(male.meanErr.Mean[Scene == "DotCloud"]$meanErr)
+# 0.9959
+
+### Room
+percentile <- ecdf(female.meanErr.comb$Room)
+percentile(male.meanErr.Mean[Scene == "Room"]$meanErr)
+# 0.59905
+
+
+
+
+
