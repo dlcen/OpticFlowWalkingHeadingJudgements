@@ -1,5 +1,5 @@
 ---
-title: "Speed Of Straightening (from 6m to 2m)"
+title: "Speed Of Straightening (from 6m to 2.5m)"
 author: "Danlu"
 date: "08/09/2019"
 output: html_document
@@ -20,7 +20,7 @@ load(file = '../../Data/segData.RData')
 ## Get the data ready
 ```{r}
 starting_point_from_target <- 6
-ending_point_from_target   <- 2
+ending_point_from_target   <- 2.5
 
 target_distance            <- 7
 
