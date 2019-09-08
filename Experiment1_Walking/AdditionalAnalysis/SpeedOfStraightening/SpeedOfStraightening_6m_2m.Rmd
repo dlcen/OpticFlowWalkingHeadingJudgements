@@ -19,14 +19,75 @@ load(file = 'Data/segData.RData')
 
 ## Get the data ready
 ```{r}
+starting_point_from_target <- 6
+ending_point_from_target   <- 2
+
+target_distance            <- 7
+
+starting_point_for_walking <- target_distance - starting_point_from_target
+ending_point_for_walking   <- target_distance - ending_point_from_target
+
 segData_clean <- data.table(segData_clean)
-offset_seg_trial1 <- segData_clean[Block %in% c(2, 4, 6, 8) & TrialNo == 1 & seg.z >= 1 & seg.z <= 5]
+offset_seg_trial1 <- segData_clean[Block %in% c(2, 4, 6, 8) & TrialNo == 1 & seg.z >= starting_point_for_walking & seg.z <= ending_point_for_walking]
 offset_seg_trial1$Scene <- droplevels(offset_seg_trial1$Scene)
 ```
 
 ## Centralise the distance
 ```{r}
 original_intercept <- as.numeric(unique(offset_seg_trial1$seg.z))[[1]]
-offset_seg_trial1[, distance  := seg.z - 1.05]
+offset_seg_trial1[, distance  := seg.z - original_intercept]
 ```
+
+## Building models
+```{r}
+m.basic   <- lme(headingErr ~ 1, random = ~ 1|SubjectNo/Scene, data = offset_seg_trial1, method = "ML", na.action = na.exclude, control = list(opt="optim"))
+
+m.dist.i  <- update(m.basic,     .~. + distance)
+m.dist.s  <- update(m.dist.i,    random = ~ distance | SubjectNo/Scene)
+
+m.scene.i <- update(m.dist.s,    .~. + Scene)
+m.scene.s <- update(m.scene.i,   .~. + Scene:distance)
+```
+
+### Compare the models
+```{r}
+anova(m.basic, m.dist.i, m.dist.s, m.scene.i, m.scene.s)
+```
+
+### Show the full model
+```{r}
+summary(m.scene.s, corr = FALSE)
+```
+
+### *Post hoc* tests
+#### Check the slopes
+```{r}
+contrast.matrix <- rbind(
+  "Cloud"         = c(0, 1, 0, 0, 0, 0, 0, 0),
+  "Line"          = c(0, 1, 0, 0, 0, 1, 0, 0),
+  "Outline "      = c(0, 1, 0, 0, 0, 0, 1, 0),
+  "Room "         = c(0, 1, 0, 0, 0, 0, 0, 1)
+)
+postHocs <-glht(m.scene.s, contrast.matrix) 
+summary(postHocs, test = adjusted("none"))
+summary(postHocs, test = adjusted("bonferroni"))
+```
+
+#### Compare the slopes
+```{r}
+contrast.matrix <- rbind(
+  "Line - Cloud"          = c(0, 0, 0, 0, 0, 1, 0, 0),
+  "Outline - Cloud "      = c(0, 0, 0, 0, 0, 0, 1, 0),
+  "Room - Cloud "         = c(0, 0, 0, 0, 0, 0, 0, 1),
+  "Outline - line"        = c(0, 0, 0, 0, 0, -1, 1, 0),
+  "Room - line"           = c(0, 0, 0, 0, 0, -1, 0, 1),
+  "Room - Outline"        = c(0, 0, 0, 0, 0, 0, -1, 1) 
+)
+postHocs <-glht(m.scene.s, contrast.matrix)
+summary(postHocs, test = adjusted("none"))
+summary(postHocs, test = adjusted("bonferroni"))
+```
+
+
+
 
