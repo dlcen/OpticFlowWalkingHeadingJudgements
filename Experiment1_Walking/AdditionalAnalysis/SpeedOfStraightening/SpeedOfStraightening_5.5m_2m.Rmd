@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r Load the required libraries, echo=FALSE, message=FALSE, warning=FALSE}
-library(multcomp); library(nlme); library(pastecs); library(data.table); 
+library(multcomp); library(nlme); library(pastecs); library(data.table); library(ggplot2)
 ```
 
 To assess the difference in the speed of straightening of trajectories between conditions, we examined the change of target-heading angles as a function of distance.
@@ -30,6 +30,39 @@ ending_point_for_walking   <- target_distance - ending_point_from_target
 segData_clean <- data.table(segData_clean)
 offset_seg_trial1 <- segData_clean[Block %in% c(2, 4, 6, 8) & TrialNo == 1 & seg.z >= starting_point_for_walking & seg.z <= ending_point_for_walking]
 offset_seg_trial1$Scene <- droplevels(offset_seg_trial1$Scene)
+```
+
+## Visualise the selection of the distance
+```{r, echo = FALSE, warning = FALSE, fig.width=6, fig.height=4}
+offset_seg_trial1_full <- segData_clean[Block %in% c(2, 4, 6, 8) & TrialNo == 1]
+ggplot(offset_seg_trial1_full, aes(x = seg.z, y = headingErr)) + theme_bw() +
+  geom_rect(aes(xmin = starting_point_for_walking, xmax = ending_point_for_walking, ymin = 0, ymax = Inf), fill = "grey90") +
+  geom_hline(yintercept = 10, colour = "grey50", linetype = "5252", size = 1, show.legend = FALSE) + 
+  stat_summary(fun.data = mean_cl_normal, geom = "ribbon", aes(group = Scene, fill = Scene, alpha = Scene), show.legend = FALSE) + 
+  stat_summary(fun.y = "mean", geom = "line", aes(group = Scene, colour = Scene, linetype = Scene), size = 1) +
+  scale_x_continuous(limits = c(0, 6), breaks = c(0, 2, 4, 6), labels = c(7, 5, 3, 1)) +
+  coord_cartesian(ylim = c(0, 15)) + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
+  labs(x = "Distance to Target (m)", y = "Target-heading angle (°)") +
+  scale_color_manual(name = "", values = c("#a6cee3", "#33a02c", "#ff7f00", "#6a3d9a")) + #red: "#d7191c", orange: "#fdae61", light blue: "#abd9e9", blue: "#2c7bb6"
+  scale_fill_manual(name = "", values = c("#a6cee3", "#33a02c", "#ff7f00", "#6a3d9a")) +
+  scale_alpha_manual(name = "", values = c(0.3, 0.15, 0.15, 0.3)) +
+  # scale_size_manual(name = "", values = c(1, 2, 1, 2)) +
+  scale_linetype_manual(name = "", values = c("solid", "3111", "11", "31")) +
+  theme(panel.background = element_rect(fill = "transparent", colour = NA),
+        panel.grid = element_blank(),
+        panel.spacing = unit(0.75, "lines"),
+        panel.border = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.background = element_rect(fill = "transparent", colour = NA),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title = element_text(size = 12, colour = "#595959"),
+        legend.title = element_blank(),
+        legend.background = element_rect(fill = "transparent", colour = NA),
+        legend.key = element_rect(fill = "transparent", colour = NA),
+        legend.key.width = unit(1.5, 'cm'),
+        legend.position = "bottom",
+        legend.text = element_text( size = 12, colour = "#595959"))
 ```
 
 ## Centralise the distance
