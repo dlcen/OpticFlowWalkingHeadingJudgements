@@ -1,0 +1,32 @@
+---
+title: "SpeedOfStraightening"
+author: "Danlu"
+date: "08/09/2019"
+output: html_document
+---
+
+```{r Load the required libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(multcomp); library(nlme); library(pastecs); library(data.table); 
+```
+
+To assess the difference in the speed of straightening of trajectories between conditions, we examined the change of target-heading angles as a function of distance.
+
+# Change of target-heading angles of Trial 1 as a function of distance 
+## Load the data
+```{r}
+load(file = 'Data/segData.RData')
+```
+
+## Get the data ready
+```{r}
+segData_clean <- data.table(segData_clean)
+offset_seg_trial1 <- segData_clean[Block %in% c(2, 4, 6, 8) & TrialNo == 1 & seg.z >= 1 & seg.z <= 5]
+offset_seg_trial1$Scene <- droplevels(offset_seg_trial1$Scene)
+```
+
+## Centralise the distance
+```{r}
+original_intercept <- as.numeric(unique(offset_seg_trial1$seg.z))[[1]]
+offset_seg_trial1[, distance  := seg.z - 1.05]
+```
+
