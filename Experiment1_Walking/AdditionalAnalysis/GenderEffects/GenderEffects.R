@@ -45,14 +45,15 @@ path.trial1 <- ggplot(offset.segData[TrialNo == 1], aes(x = seg.z, y = x)) + the
         legend.background = element_rect(fill = "transparent", colour = NA),
         legend.key = element_rect(fill = "transparent", colour = NA),
         legend.position = "bottom",
-        legend.text = element_text( size = 12, colour = "#595959"))
+        legend.text = element_text( size = 12, colour = "#595959"),
+        strip.text = element_text(size = 12, face = "bold"))
 
 err.trial1 <- ggplot(offset.segData[TrialNo == 1], aes(x = seg.z, y = headingErr)) + theme_bw() +
   geom_hline(yintercept = 10, colour = "grey50", linetype = "5252", size = 1, show.legend = FALSE) + 
   stat_summary(fun.data = mean_cl_normal, geom = "ribbon", aes(group = Gender, fill = Gender), alpha = 0.2, show.legend = FALSE) + 
   stat_summary(fun.y = "mean", geom = "line", aes(group = Gender, colour = Gender), size = 1) +
   scale_x_continuous(limits = c(0, 6), breaks = c(0, 2, 4, 6), labels = c(7, 5, 3, 1)) +
-  coord_cartesian(ylim = c(-5, 15)) + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
+  coord_cartesian(ylim = c(-2, 16)) + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
   labs(x = "Distance to Target (m)", y = "Target-heading angle (°)") +
   # scale_color_manual(name = "", values = c("#a6cee3", "#33a02c", "#ff7f00", "#6a3d9a")) + #red: "#d7191c", orange: "#fdae61", light blue: "#abd9e9", blue: "#2c7bb6"
   # scale_fill_manual(name = "", values = c("#a6cee3", "#33a02c", "#ff7f00", "#6a3d9a")) +
@@ -74,31 +75,39 @@ err.trial1 <- ggplot(offset.segData[TrialNo == 1], aes(x = seg.z, y = headingErr
         legend.key = element_rect(fill = "transparent", colour = NA),
         legend.key.width = unit(1.5, 'cm'),
         legend.position = "bottom",
-        legend.text = element_text( size = 12, colour = "#595959"))
+        legend.text = element_text( size = 12, colour = "#595959"),
+        strip.text = element_text(size = 12, face = "bold"))
 
 prow     <- plot_grid(path.trial1 + theme(legend.position="none"), NULL, err.trial1 + theme(legend.position="none"), labels = c("a", "b", ""), label_size = 18, align = "vh", nrow = 1, rel_widths = c(.4, 0.05 ,.55))
 legend   <- get_legend(err.trial1)
 p        <- plot_grid( prow, legend, ncol = 1, rel_heights = c(3, 0.2))
 p
 
-ggsave("figures/GenderEffectsOnTrjsAndTHAs.png", width=32, height=16, units = "cm") 
+ggsave("figures/GenderEffectsOnTrjsAndTHAs.png", width=24, height=12, units = "cm") 
 
 
 # Check the position of male (n = 7) mean in the distribution of female (n = 7) means.
 
 ## Calculating random combinations in MATLAB
 offset.meanErr <- trial.meanErr.4m[Block %in% c(2, 4, 6, 8) & TrialNo == 1]
-female.meanErr <- offset.meanErr[Gender == "Female"]
-write.csv(female.meanErr, file = "Data/Female_Trial1_MeanErr_4m.csv", row.names = F)
+# female.meanErr <- offset.meanErr[Gender == "Female"]
+# write.csv(female.meanErr, file = "Data/Female_Trial1_MeanErr_4m.csv", row.names = F)
+female.meanErr <- read.csv("Data/Female_Trial1_MeanErr_4m.csv", header = T)
 
 male.meanErr <- offset.meanErr[Gender == "Male"]
 male.meanErr.Mean <- male.meanErr[, .(meanErr = mean(meanErr, na.rm = T)), by = c("Scene")]
+
+male.meanErr.Mean$Scene <- droplevels(male.meanErr.Mean$Scene)
+male.meanErr.Mean$Scene <- factor(male.meanErr.Mean$Scene, levels = levels(male.meanErr.Mean$Scene)[c(2, 3, 1, 4)], labels = c("Line", "Outline", "Cloud", "Room"))
 
 ## Read combinations in MATLAB
 female.meanErr.comb <- read.csv("Data/Female_Trial1_MeanErr_Combinations.csv", header = T)
 female.meanErr.comb$CombNo <- c(1:nrow(female.meanErr.comb))
 female.meanErr.comb.long <- melt(female.meanErr.comb, id = "CombNo")
 names(female.meanErr.comb.long) <- c('CombNo', 'Scene', 'meanErr')
+
+female.meanErr.comb.long$Scene <- droplevels(female.meanErr.comb.long$Scene)
+female.meanErr.comb.long$Scene <- factor(female.meanErr.comb.long$Scene, levels = levels(female.meanErr.comb.long$Scene), labels = c("Line", "Outline", "Cloud", "Room"))
 
 female.meanErr.comb.long <- data.table(female.meanErr.comb.long)
 female.meanErr.comb.mean <- female.meanErr.comb.long[, .(meanErr = mean(meanErr, na.rm = T), std = sd(meanErr, na.rm = T)), by = c("Scene")]
@@ -113,9 +122,10 @@ ggplot(female.meanErr.comb.long, aes(x = meanErr)) +
   geom_rect(data = female.meanErr.comb.mean, mapping=aes(xmin=ci_dn, xmax=ci_up, ymin=Inf, ymax=-Inf), color="grey50", alpha=0.1) +
   geom_vline(data = male.meanErr.Mean, aes(xintercept = meanErr), color = "red", linetype = "dashed", size = 1 ) +
   facet_wrap(~ Scene) + 
-  labs(x = "Average mean target-heading angle (degree)") 
+  labs(x = "Average mean target-heading angle (°)") +
+  theme(strip.text = element_text(size = 12, face = "bold"))
 
-ggsave("figures/CombHistgram.png", width=16, height=16, units = "cm") 
+ggsave("figures/CombHistgram.png", width=15, height=15, units = "cm") 
 
   
 ## Determining the percentile
@@ -130,8 +140,8 @@ percentile(male.meanErr.Mean[Scene == "Outline"]$meanErr)
 # 0.6904
 
 ### Cloud
-percentile <- ecdf(female.meanErr.comb$DotCloud)
-percentile(male.meanErr.Mean[Scene == "DotCloud"]$meanErr)
+percentile <- ecdf(female.meanErr.comb$Cloud)
+percentile(male.meanErr.Mean[Scene == "Cloud"]$meanErr)
 # 0.9959
 
 ### Room
