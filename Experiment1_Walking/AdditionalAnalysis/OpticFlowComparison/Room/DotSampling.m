@@ -1,21 +1,16 @@
 %% Read the texture image and convert it into grayscale (it was RGB)
 I = imread('wallTex_Brightened.jpg');
 I = rgb2gray(I);
-imshow(I)
+% imshow(I)
 
 %% Find out the edges on the texture
 BW = edge(I, 'Canny');
-figure, imshow(BW)
+% figure, imshow(BW)
 
 %% Calculate the position of the dots on the edges relative to the room:
 % Notes:
 % 	1. The size of the texture is 1024X1024;
 %   2. Should include the dots on the edges of the walls (e.g., between the floor and walls, etc)
-
-BW(:, 1) = 1;
-BW(1, :) = 1;
-BW(:, end) = 1;
-BW(end, :) = 1;
 
 [row, col] = find(BW);
 
@@ -36,7 +31,7 @@ floor_y = zeros(size(floor_x));
 floor_pos = [floor_x, floor_y, floor_z];
 
 doorway_width = 0.5;
-doorway_ceiling_distance = 2.5;
+doorway_height = 2.5;
 
 % Ceiling (scale = 1:1)
 ceiling_z = row/1024 * depth - (depth - doorway_distance);
@@ -71,7 +66,7 @@ front_y_1   = front_y_all(find(front_x_all <= -doorway_width/2));
 front_x_2   = front_x_all(front_x_all >= doorway_width/2);
 front_y_2   = front_y_all(find(front_x_all >= doorway_width/2));
 
-door_y = height_val(height_val <=0.5) + doorway_ceiling_distance;
+door_y = height_val(height_val <=0.5) + doorway_height;
 door_x = row(height_val <= 0.5)/1024 * 12 - doorway_width/2;
 
 door_d = find(door_x > -doorway_width/2 & door_x <= doorway_width/2);
@@ -79,17 +74,20 @@ door_d = find(door_x > -doorway_width/2 & door_x <= doorway_width/2);
 door_x = door_x(door_d);
 door_y = door_y(door_d);
 
-door_line_y_1 = [0:width/2048:doorway_ceiling_distance]';
+door_line_y_1 = [0:width/2048:doorway_height]';
 door_line_x_1 = zeros(size(door_line_y_1)) - doorway_width/2;
 
-door_line_y_2 = [0:width/2048:doorway_ceiling_distance]';
+door_line_y_2 = [0:width/2048:doorway_height]';
 door_line_x_2 = zeros(size(door_line_y_1)) + doorway_width/2;
 
-door_bt_x = door_x(find(door_y == doorway_ceiling_distance));
-door_bt_y = door_y(door_y == doorway_ceiling_distance) - doorway_ceiling_distance;
+door_tp_x = [-doorway_width/2: doorway_width/1024: doorway_width/2]';
+door_tp_y = zeros(size(door_tp_x)) + doorway_height;
 
-front_x = [front_x_1; front_x_2; door_x; door_line_x_1; door_line_x_2; door_bt_x];
-front_y = [front_y_1; front_y_2; door_y; door_line_y_1; door_line_y_2; door_bt_y];
+door_bt_x = door_tp_x;
+door_bt_y = zeros(size(door_tp_x));
+
+front_x = [front_x_1; front_x_2; door_x; door_line_x_1; door_line_x_2; door_bt_x; door_tp_x];
+front_y = [front_y_1; front_y_2; door_y; door_line_y_1; door_line_y_2; door_bt_y; door_tp_y];
 front_z = zeros(size(front_x)) + doorway_distance;
 
 front_pos = [front_x, front_y, front_z];
@@ -103,18 +101,18 @@ room_labels = zeros(size(room_dots_pos, 1), 1);
 
 room_dots_pos = [room_dots_pos, room_labels];
 
-% Find out those on the doorway
-idx = find(room_dots_pos(:, 1) == -doorway_width/2 & room_dots_pos(:, 2) < doorway_ceiling_distance);
-room_dots_pos(idx, 4) = 2;
+% Find out those on the doorway and add the label
+idx = find(room_dots_pos(:, 1) == -doorway_width/2 & room_dots_pos(:, 2) < doorway_height);
+room_dots_pos(idx, 4) = 2; % Label "2" as it is on a vertical edge
 
-idx = find(room_dots_pos(:, 1) == doorway_width/2 & room_dots_pos(:, 2) < doorway_ceiling_distance);
-room_dots_pos(idx, 4) = 2;
+idx = find(room_dots_pos(:, 1) == doorway_width/2 & room_dots_pos(:, 2) < doorway_height);
+room_dots_pos(idx, 4) = 2; % Label "2" as it is on a vertical edge
 
-idx = find(room_dots_pos(:, 1) >= -doorway_width/2 & room_dots_pos(:, 1) <= doorway_width/2 & room_dots_pos(:, 2) == doorway_ceiling_distance);
-room_dots_pos(idx, 4) = 1;
+idx = find(room_dots_pos(:, 1) >= -doorway_width/2 & room_dots_pos(:, 1) <= doorway_width/2 & room_dots_pos(:, 2) == doorway_height);
+room_dots_pos(idx, 4) = 1; % Label "1" as it is on a horizontal edge
 
 idx = find(room_dots_pos(:, 1) >= -doorway_width/2 & room_dots_pos(:, 1) <= doorway_width/2 & room_dots_pos(:, 2) == 0 & room_dots_pos(:, 3) == doorway_distance);
-room_dots_pos(idx, 4) = 1;
+room_dots_pos(idx, 4) = 1; % Label "1" as it is on a horizontal edge
 
 %% Plot the sampled dots viewed from starting point ([0, 0]) at the height of 1.5m
 spv_x = room_dots_pos(:, 1)./room_dots_pos(:, 3);
@@ -148,5 +146,4 @@ dotPosition(:, 2) = dotPosition(:, 2) - eye_height;
 dotPosition(:, 3) = dotPosition(:, 3) - (doorway_distance - distance_to_target);
 
 save('dotPosition', 'dotPosition')
-
 
