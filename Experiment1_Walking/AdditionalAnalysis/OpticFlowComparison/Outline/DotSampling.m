@@ -95,6 +95,23 @@ dr_lf 	  = [dr_lf_x; dr_lf_y; dr_lf_z; dr_lf_l];
 % Put the sampled dots together
 outline_dots_pos = [l_fr_up, l_fr_bm, l_fr_rt, l_fr_lf, l_rt_up, l_rt_bm, l_lf_up, l_lf_bm, dr_up, dr_rt, dr_lf]';
 
+%% Plot the sampled dots viewed from starting point ([0, 0]) at the height of 1.5m
+spv_x = outline_dots_pos(:, 1)./outline_dots_pos(:, 3);
+spv_y = (outline_dots_pos(:, 2) - 1.5)./outline_dots_pos(:, 3);
+
+fh = figure('Menu','none','ToolBar','none');
+ah = axes('Units','Normalize','Position',[0 0 1 1]);
+scatter(atand(spv_x), atand(spv_y), 1, 'filled')
+xlim([-45 45])
+ylim([-25 25])
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
+box on
+set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
+
+savefig(['SampledDots'])
+print(['SampledDots'], '-dsvg')
+
 %% Export the position of the dots on the wall
 dlmwrite('Outline_positions.csv', outline_dots_pos,'delimiter',',');
 
@@ -107,6 +124,6 @@ dotPosition = outline_dots_pos(find(outline_dots_pos(:, 3) > 0), :);
 
 % Calculate the relative position
 dotPosition(:, 2) = dotPosition(:, 2) - eye_height;
-dotPosition(:, 3) = dotPosition(:, 3) - (line_Z - distance_to_target);
+dotPosition(:, 3) = dotPosition(:, 3) - (target_distance - distance_to_target);
 
 save('dotPosition', 'dotPosition')

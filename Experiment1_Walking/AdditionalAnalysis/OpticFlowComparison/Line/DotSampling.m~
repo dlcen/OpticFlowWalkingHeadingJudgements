@@ -47,17 +47,18 @@ spv_x = line_dots_x./line_dots_z;
 spv_y = (line_dots_y - 1.5)./line_dots_z;
 
 fh = figure('Menu','none','ToolBar','none');
-ah = axes('Units','Normalize','Position',[0 0 1 1]);
+ah = axes('Units','Normalize','Position',[0 0 1 1], ;XTixk);
 scatter(atand(spv_x), atand(spv_y), 1, 'filled')
 xlim([-45 45])
 ylim([-25 25])
-set(gca,'XTick',[]);
-set(gca,'YTick',[]);
+axis(ah, 'square')
+set(gca,'XTickLabel',[]);
+set(gca,'YTickLabel',[]);
+% set(gca,'XTick',[]);
+% set(gca,'YTick',[]);
 box on
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
-
-savefig(['SampledDots'])
-print(['SampledDots'], '-dsvg')
+fh.Position(3) = fh.Position(4); 
 
 %% Export the position of the dots on the wall
 dlmwrite('Line_positions.csv', line_dots_pos,'delimiter',',');
