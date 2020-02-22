@@ -97,3 +97,16 @@ outline_dots_pos = [l_fr_up, l_fr_bm, l_fr_rt, l_fr_lf, l_rt_up, l_rt_bm, l_lf_u
 
 %% Export the position of the dots on the wall
 dlmwrite('Outline_positions.csv', outline_dots_pos,'delimiter',',');
+
+%% Calculate the position of the sampled dots relative to the viewer
+eye_height = 1.5;
+distance_to_target = 6;
+
+% Get rid of those sampled dots that are behind the viewer
+dotPosition = outline_dots_pos(find(outline_dots_pos(:, 3) > 0), :); 
+
+% Calculate the relative position
+dotPosition(:, 2) = dotPosition(:, 2) - eye_height;
+dotPosition(:, 3) = dotPosition(:, 3) - (line_Z - distance_to_target);
+
+save('dotPosition', 'dotPosition')
