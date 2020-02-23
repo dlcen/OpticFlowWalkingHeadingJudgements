@@ -81,9 +81,6 @@ while n_grid > 0
                     second_dots_dist = sqrt((second_dots(:, 1) - this_dot(:, 1)).^2 + (second_dots(:, 2) - this_dot(:, 2)).^2);
                     second_dot = second_dots(second_dots_dist == min(second_dots_dist), :); % Find out the closest dot.
                     
-                    % If there is more than one potential second dot with the
-                    % minimum distance to the current dot, find out the one
-                    % with the larget speed difference.
                     if size(second_dot, 1) > 1
                         second_dot_sp_diff =  sqrt((second_dot(:, 3) - this_dot(3)).^2 + (second_dot(:, 4) - this_dot(4)).^2);
                         second_dot = second_dot(second_dot_sp_diff == max(second_dot_sp_diff), :);
@@ -124,13 +121,11 @@ while n_grid > 0
             sp_diff = abs(this_dot_sp - second_dot_sp);
             
             % If the magnitude of the speed difference is lower than the
-            % minimum threshold, or is smaller than 5% of the larger speed
-            % of the two dots (defined by weber factor), the pair is
-            % considered invalid.x
+            % minimum threshold, or 
             if (sp_diff < bottom_v || sp_diff < weberfactor * max(this_dot_sp, second_dot_sp))
                 second_dot = [];
             else
-                if this_dot_sp > second_dot_sp  % Order the pair according to their speed magnitude
+                if this_dot_sp > second_dot_sp
                     tmp_pair = [this_dot(1), this_dot(2), this_dot(3) - second_dot(3), this_dot(4) - second_dot(4)];
                 else
                     tmp_pair = [this_dot(1), this_dot(2), second_dot(3) - this_dot(3), second_dot(4) - this_dot(4)];
