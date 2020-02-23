@@ -91,8 +91,6 @@ To calculate a flow field for each virtual environment, movement of a viewer is 
 
   A searchlight method is used to find pairs of dots that can potentially form motion parallax in the field.
 
-  For a sampled dot, any dot with a distance shorter than the closeness threshold is considered as overlapping with the dot on the image plane, forming a potential pair of motion parallax dots. However, if the two dots are on the same depth, they will not be considered as a valid motion parallax dots. In addition, the motion parallax pairs between dots on the target post and dots on the other visual elements are not considered.
+  For a sampled dot, any dot with a distance shorter than a closeness threshold (e.g., 0.2&deg;![closeness](https://latex.codecogs.com/gif.latex?\times\sqrt{2}=) 0.28&deg;) is considered as overlapping with the dot on the image plane, forming a potential pair of motion parallax dots. However, if the two dots are on the same depth, they will not be considered as a valid motion parallax dots. In addition, the motion parallax pairs between dots on the target post and dots on the other visual elements are not considered.
 
-  After determining the potential motion parallax dot pairs, vector difference between their image velocity is calculated for each pair. If the magnitude of the velocity difference is lower than a threshold (0.02m/s), the pair is not considered as a valid motion parallax pair.
-
-  
+  After determining the potential motion parallax dot pairs, vector difference between their image velocity is calculated for each pair. If the magnitude of the velocity difference is lower than a threshold (0.02m/s or 5% - Weber factor - of the larger speed within the pair), the pair is not considered as a valid motion parallax pair.
