@@ -42,6 +42,10 @@ line_dots_z = repmat(line_Z, size(line_dots_x));
 % Put the location data together
 line_dots_pos = [line_dots_x, line_dots_y, line_dots_z, line_dots_l];
 
+%% Check the sampled dots in 3D space
+figure;
+scatter3(line_dots_pos(:, 1), line_dots_pos(:, 3), line_dots_pos(:, 2), 1, 'filled')
+
 %% Plot the sampled dots viewed from starting point ([0, 0]) at the height of 1.5m
 spv_x = line_dots_x./line_dots_z;
 spv_y = (line_dots_y - 1.5)./line_dots_z;
@@ -63,15 +67,25 @@ print(['SampledDots'], '-dsvg')
 dlmwrite('Line_positions.csv', line_dots_pos,'delimiter',',');
 
 %% Calculate the position of the sampled dots relative to the viewer (at 6m from the target)
+
+% If no 'Line_positions.csv' in the folder and/or you have gone through the process above
+dotPosition = line_dots_pos;
+
+% If 'Line_positions.csv' already exists, can start here
+% dotPosition = readtable('Line_positions.csv');
+% dotPosition = table2array(dotPosition);
+
+% Calculate the relative position
 eye_height = 1.5;
 distance_to_target = 6;
 
-% Get rid of those sampled dots that are behind the viewer
-dotPosition = line_dots_pos(find(line_dots_pos(:, 3) > 0), :); 
-
-% Calculate the relative position
 dotPosition(:, 2) = dotPosition(:, 2) - eye_height;
 dotPosition(:, 3) = dotPosition(:, 3) - (line_Z - distance_to_target);
 
+% Check the sample dots in 3D space
+figure;
+scatter3(dotPosition(:, 1), dotPosition(:, 3), dotPosition(:, 2), 0.75, 'filled')
+
+% Save the dot positions
 save('dotPosition', 'dotPosition')
 
