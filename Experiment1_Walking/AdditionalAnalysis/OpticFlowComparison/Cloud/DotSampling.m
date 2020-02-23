@@ -20,12 +20,17 @@ dotPosition = [cloud_dotPosition; line_dotPosition];
 figure; scatter3(dotPosition(:, 1), dotPosition(:, 3), dotPosition(:, 2))
 
 %% Plot the sampled dots viewed from starting point ([0, 0]) at the height of 1.5m
-spv_x = dotPosition(:, 1)./dotPosition(:, 3);
-spv_y = (dotPosition(:, 2) - 1.5)./dotPosition(:, 3);
+spv_x_cloud = cloud_dotPosition(:, 1)./cloud_dotPosition(:, 3);
+spv_y_cloud = (cloud_dotPosition(:, 2) - 1.5)./cloud_dotPosition(:, 3);
+
+spv_x_line = line_dotPosition(:, 1)./line_dotPosition(:, 3);
+spv_y_line = (line_dotPosition(:, 2) - 1.5)./line_dotPosition(:, 3);
 
 fh = figure('Menu','none','ToolBar','none');
 ah = axes('Units','Normalize','Position',[0 0 1 1]);
-scatter(atand(spv_x), atand(spv_y), 1, 'filled')
+scatter(atand(spv_x_cloud), atand(spv_y_cloud), 3, 'filled')
+hold on;
+scatter(atand(spv_x_line), atand(spv_y_line), 1, 'filled')
 xlim([-45 45])
 ylim([-25 25])
 set(gca,'XTick',[]);
