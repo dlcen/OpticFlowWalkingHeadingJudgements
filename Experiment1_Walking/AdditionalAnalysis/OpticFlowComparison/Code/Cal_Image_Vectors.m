@@ -1,14 +1,14 @@
 
 % This function is to calculate the velocity vectors on the image plane based on the translation and environment
-% 
+%
 % INPUT:
-% 	env_dots: position of dots in the environment (NOTE: should already taking viewer's position into account)
+% 	env_dots: position of sampled dots in the environment (NOTE: should already taking viewer's position into account)
 % 	T: translation [Tx, Ty, Tz]
 %   img_w, img_h: the parameter of the size of the image plane, to exclude those dots outside the vision.
-% 
+%
 % OUTPUT:
 % 	image_data: an image velocity matrix, including the image location of each vector (x, y), the velocity on the x-axis and y-axis respectively and the magnitude of speed.
-% 				it also includes the noise of the speed and direction for each vector. 
+% 				it also includes the noise of the speed and direction for each vector.
 
 function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 
@@ -21,18 +21,18 @@ function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 	% Calculate the velocity elements on the x-axis and y-axis on the image plane
 	image_vx = (env_dots(:, 1).* T(3) - env_dots(:, 3).* T(1) + T(1) * pF * (env_dots(:, 1).^2 + env_dots(:, 3).^2))./env_dots(:, 3).^2;
 	image_vy = (env_dots(:, 2).* T(3) - env_dots(:, 3).* T(2) + T(1) * pF * (env_dots(:, 1) .* env_dots(:, 2)))./env_dots(:, 3).^2;
-    
-    h_rst_id = find(env_dots(:, 4) == 1);
-    r_rst_id = find(env_dots(:, 4) == 2);
-    
-    if ~isempty(h_rst_id)
-        image_vx(h_rst_id) = 0;
-    end
-    
-    if ~isempty(r_rst_id)
-        image_vy(r_rst_id) = 0;
-    end
-    
+
+  h_rst_id = find(env_dots(:, 4) == 1);
+  r_rst_id = find(env_dots(:, 4) == 2);
+
+  if ~isempty(h_rst_id)
+      image_vx(h_rst_id) = 0;
+  end
+
+  if ~isempty(r_rst_id)
+      image_vy(r_rst_id) = 0;
+  end
+
 	image_v  = sqrt(image_vx.^2 + image_vy.^2);
 
 	% Calculate the noise for the magnitude of velocity
@@ -47,8 +47,8 @@ function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 		elseif image_vx(i) < 0
 			image_dir(i) = image_dir(i) + 360;
 		end
-	end 
-			
+	end
+
 	% Calculate the noise for the vector direction
 	dir_noise = 30 * (1 + 0.02./image_v);
 
@@ -63,8 +63,8 @@ function image_data = Cal_Image_Vectors(env_dots, T,  pF, img_w, img_h)
 	image_data(:, 6) = sp_noise;
 	image_data(:, 7) = image_dir;
 	image_data(:, 8) = dir_noise;
-    image_data(:, 9) = env_dots(:, 4);
-    image_data(:, 10) = env_dots(:, 3); 
+  image_data(:, 9) = env_dots(:, 4);
+  image_data(:, 10) = env_dots(:, 3);
 
 	% Exclude those outside the vision
 	vf_x = tand(img_w/2); vf_y = tand(img_h/2);

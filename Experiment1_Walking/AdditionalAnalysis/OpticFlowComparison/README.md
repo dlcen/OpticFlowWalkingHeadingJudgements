@@ -36,4 +36,15 @@ The visual dots are sampled along the black-white edges on the random-noised pat
 The sampled dots for the *Cloud* condition contain two groups. One group contains the sampled dots from the target post, which is calculated in the same way as for the *Line* condition. The other group contains the dots that constitute the cloud. In the experiment, there were a total of 5250 dots in the cloud. Each dot had a limited lifetime of 500ms. Following a protocol similar to [Foulkes, Rushton and Warren, 2013](https://www.frontiersin.org/articles/10.3389/fnbeh.2013.00053/full#B11) and an estimate of visual persistence of around 100ms ([Di Lollo, 1980](https://psycnet.apa.org/record/1981-06942-001)), it is estimated perception of 20% more dots than were presented on any single frame. Therefore, a total of 6300 dots were created for the analysis.
 
 ### Flow vector calculation
-The viewer was 6m from the target and moving towards it at 1m/s. The eye-height of the viewer was 1.5m.
+To calculate a flow field for each virtual environment, movement of a viewer is simulated. The viewer stands at 6m from the target, and moves towards the target at 1 m/s. There is a 10&deg; horizontal offset between the movement direction and the target. The eye-height of the viewer is 1.5m.
+
+ `Cal_Image_Vectors.m` calculates the flow vector for each sampled dot based on its position relative to the viewer in the 3D space ([ ![x_dot](https://latex.codecogs.com/gif.latex?x_{dot}), ![y_dot](https://latex.codecogs.com/gif.latex?y_{dot}), ![z_dot](https://latex.codecogs.com/gif.latex?z_{dot})]).
+ 1. Each dot projects an image on the retina of the viewer. This image position ([ ![image_x](https://latex.codecogs.com/gif.latex?x_{image}), ![image_y](https://latex.codecogs.com/gif.latex?y_{image}) ]) is calculated following the equations below:
+
+ <!-- ![image_eq](https://latex.codecogs.com/gif.latex?x_{image}&space;=&space;\frac{x_{dot}}{z_{dot}},&space;y_{image}&space;=&space;\frac{y_{dot}}{z_{dot}}) -->
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?x_{image}&space;=&space;\frac{x_{dot}}{z_{dot}},&space;\quad&space;y_{image}&space;=&space;\frac{y_{dot}}{z_{dot}}">
+</p>
+
+2. A flow vector is calculated for each dot, following the equations below:
