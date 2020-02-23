@@ -33,10 +33,11 @@ set(gca,'YTick',[]);
 box on
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
 
-savefig(['SampledDots'])
-print(['SampledDots'], '-dsvg')
+savefig(fh, 'SampledDots.fig')
+print(fh, 'SampledDots', '-dsvg')
 
 %% Calculate the position of the sampled dots relative to the viewer
+
 dotPosition(:, 2) = dotPosition(:, 2) - 1.5;
 dotPosition(:, 3) = dotPosition(:, 3) - 1;
 

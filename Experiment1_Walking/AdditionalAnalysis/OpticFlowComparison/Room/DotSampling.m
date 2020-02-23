@@ -132,8 +132,8 @@ set(gca,'YTick',[]);
 box on
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
 
-savefig(['SampledDots'])
-print(['SampledDots'], '-dsvg')
+savefig(fh, 'SampledDots.fig')
+print(fh, 'SampledDots', '-dsvg')
 
 %% Export the position of the dots on the wall
 dlmwrite('Room_positions.csv', room_dots_pos,'delimiter',',');

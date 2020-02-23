@@ -60,8 +60,8 @@ set(gca,'YTick',[]);
 box on
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
 
-savefig(['SampledDots'])
-print(['SampledDots'], '-dsvg')
+savefig(fh, 'SampledDots.fig')
+print(fh, 'SampledDots', '-dsvg')
 
 %% Export the position of the dots on the line
 dlmwrite('Line_positions.csv', line_dots_pos,'delimiter',',');

@@ -113,8 +113,8 @@ set(gca,'YTick',[]);
 box on
 set(gcf, 'Units', 'centimeters', 'OuterPosition', [5, 5, 21, 14]);
 
-savefig(['SampledDots'])
-print(['SampledDots'], '-dsvg')
+savefig(fh, 'SampledDots.fig')
+print(fh, 'SampledDots', '-dsvg')
 
 %% Export the position of the dots on the outline
 dlmwrite('Outline_positions.csv', outline_dots_pos,'delimiter',',');
