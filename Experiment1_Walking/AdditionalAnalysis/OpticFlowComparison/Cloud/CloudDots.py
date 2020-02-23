@@ -34,15 +34,20 @@ def flashingCloud(height, width, depth, offset, number, node):
 
 viz.go()
 
-Target = vizshape.addCylinder(height = 3, radius = 0.02)  # Create a post to be the target. 
-Target.setPosition([0, 1.5, 7], viz.ABS_GLOBAL)           # Place the target at 7m from the starting point
+# Create a post to be the target. 
+Target_height = 3
+Target_radius = 0.02
+Target_distance = 7 	# Place the target at 7m from the starting point
+
+Target = vizshape.addCylinder(height = Target_height, radius = Target_radius)  
+Target.setPosition([0, Target_height/2, Target_distance], viz.ABS_GLOBAL)           
 
 vol_height = 3 			# Height of the volume
 vol_width  = 12 		# Width of the volume
 vol_depth  = 12 		# Depth of the volume
 
-Target_offset = 1 		# Distance between the target and the boundary of the cloud behind
+Target_offset = Target_distance - vol_depth/2;	
 
 n_dots = 6300 			# Number of dots to be included in the cloud
 
-flashingCloud(3, 12, 12, 1, 6300, Target) 	# Create a cloud and save the location of each dot in the 3D space
+flashingCloud(vol_height, vol_width, vol_depth, Target_offset, n_dots, Target) 	# Create a cloud and save the location of each dot in the 3D space
