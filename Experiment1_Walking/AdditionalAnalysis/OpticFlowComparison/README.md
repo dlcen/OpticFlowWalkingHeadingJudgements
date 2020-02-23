@@ -44,7 +44,31 @@ To calculate a flow field for each virtual environment, movement of a viewer is 
  <!-- ![image_eq](https://latex.codecogs.com/gif.latex?x_{image}&space;=&space;\frac{x_{dot}}{z_{dot}},&space;y_{image}&space;=&space;\frac{y_{dot}}{z_{dot}}) -->
 
 <p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?x_{image}&space;=&space;\frac{x_{dot}}{z_{dot}},&space;\quad&space;y_{image}&space;=&space;\frac{y_{dot}}{z_{dot}}">
+  <img src="https://latex.codecogs.com/gif.latex?x_{image}&space;=&space;\frac{x_{dot}}{z_{dot}},&space;\quad&space;y_{image}&space;=&space;\frac{y_{dot}}{z_{dot}}">.
 </p>
 
-2. A flow vector is calculated for each dot, following the equations below:
+2. A flow vector ([ ![vx](https://latex.codecogs.com/gif.latex?v_x), ![vy](https://latex.codecogs.com/gif.latex?v_y) ]) is calculated for each dot, following the equations below:
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}&space;v_x&space;\\&space;v_y&space;\end{bmatrix}&space;=&space;\frac{1}{z_{dot}}&space;\begin{bmatrix}&space;-f&space;\quad&space;0&space;\quad&space;x_{image}&space;\\&space;0&space;\quad&space;-f&space;\quad&space;y_{image}&space;\end{bmatrix}&space;\textbf{T}&space;&plus;&space;\begin{bmatrix}&space;x_{image}&space;y_{image}&space;\quad&space;-(1&space;&plus;&space;x_{image}^2)&space;\quad&space;y_{image}&space;\\&space;1&space;&plus;&space;y_{image}^2&space;\quad&space;-x_{image}&space;y_{image}&space;\quad&space;-x_{image}&space;\end{bmatrix}&space;\mathbf{\Omega&space;}">
+</p>
+
+  where ![f](https://latex.codecogs.com/gif.latex?f) is the focal length, ![T](https://latex.codecogs.com/gif.latex?\textbf{T}) is the transitional velocity of the viewer ( [ ![Tx](https://latex.codecogs.com/gif.latex?T_x), ![Ty](https://latex.codecogs.com/gif.latex?T_y), ![Tz](https://latex.codecogs.com/gif.latex?T_z) ]), and ![Omega](https://latex.codecogs.com/gif.latex?\mathbf{\Omega}) is the rotational velocity of the viewer ([ ![Ox](https://latex.codecogs.com/gif.latex?\Omega_x), ![Oy](https://latex.codecogs.com/gif.latex?\Omega_y), ![Oz](https://latex.codecogs.com/gif.latex?\Omega_z) ]).
+
+  Here, we make ![f](https://latex.codecogs.com/gif.latex?f) to be 1 for convenience. As the viewer does not have any rotational movement around x-axis (pitch) or z-axis (roll), both ![Ox](https://latex.codecogs.com/gif.latex?\Omega_x) and ![Oz](https://latex.codecogs.com/gif.latex?\Omega_z) are 0.
+
+  When the viewer walks with the gaze fixed on the target, we have ![vx](https://latex.codecogs.com/gif.latex?v_x), ![vy](https://latex.codecogs.com/gif.latex?v_y) = 0 for ![image_x](https://latex.codecogs.com/gif.latex?x_{image}), ![image_y](https://latex.codecogs.com/gif.latex?y_{image}) = 0, and
+  <p align="center">
+    <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}&space;0&space;\\&space;0&space;\end{bmatrix}&space;=&space;\frac{1}{z_{dot}}&space;\begin{bmatrix}&space;-T_x&space;\\&space;-T_y&space;\end{bmatrix}&space;&plus;&space;\begin{bmatrix}&space;-1&space;\\&space;0&space;\end{bmatrix}&space;\Omega_{y_0}">.
+  </p>
+
+  Therefore,
+  <p align="center">
+    <img src="https://latex.codecogs.com/gif.latex?\Omega_{y_0}=-T_xP_F">,
+  </p>
+
+  where ![pf](https://latex.codecogs.com/gif.latex?P_F) is the inverse depth, ![inverse z](https://latex.codecogs.com/gif.latex?\frac{1}{z_{dot}}). When there is only translation, ![pf](https://latex.codecogs.com/gif.latex?P_F) = 0.
+
+  Combining the equations above, we have
+  <p align="center">
+    <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}&space;v_x&space;\\&space;v_y&space;\end{bmatrix}&space;=&space;\frac{1}{z_{dot}^2}&space;\begin{bmatrix}&space;x_{dot}T_z&space;-&space;z_{dot}T_x&space;&plus;&space;T_1P_F(x_{dot}^2&space;&plus;&space;z_{dot}^2)&space;\\&space;y_{dot}T_z&space;-&space;z_{dot}T_y&space;&plus;&space;T_xP_Fx_{dot}y_{dot}&space;\end{bmatrix}">
+  </p>
