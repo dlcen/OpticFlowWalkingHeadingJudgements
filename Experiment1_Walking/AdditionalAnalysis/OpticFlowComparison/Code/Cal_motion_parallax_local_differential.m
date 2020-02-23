@@ -7,12 +7,13 @@
 %
 % OUTPUTS:
 % 		differential_image_data: velocity difference between the pairs
-% 
+%
 % Procedures:
 % 		Step 1: Starting from the first data point
 % 		Step 2: Find out whether there is a dot with which the distance is smaller than the threshold
 % 		Step 3: If there are more than one dot in the near zone, find out the one with the largest distance or the largest speed difference.
-%       Step 4: Remove the pair from image_data
+%     Step 4: Remove the pair from image_data
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
 %% Function
 function differential_image_data = Cal_motion_parallax_local_differential_seq_raw(image_data, closeness_threshold)
@@ -23,10 +24,10 @@ function differential_image_data = Cal_motion_parallax_local_differential_seq_ra
 
 	bottom_v     = 0.02;
 	weberfactor  = 0.05;
-    
-    differential_image_data = [];
 
-%% Step 2: Find pairs 
+  differential_image_data = [];
+
+%% Step 2: Find pairs
 	if nargin == 1
 		closeness_threshold = 0.2;
 	end
@@ -52,64 +53,56 @@ function differential_image_data = Cal_motion_parallax_local_differential_seq_ra
 				second_dot = image_data(range_id, :);
 
 				% Remove if both of the dots come from the target (label = 1 or 2)
-				if this_dot(9) > 0 && second_dot(9) > 0
+				if this_dot(7) > 0 && second_dot(7) > 0
 					n_grid = size(image_data, 1);
 					continue;
 				end
 
 				% Remove if both at the same depth
-				if this_dot(10) == second_dot(10)
+				if this_dot(8) == second_dot(8)
 					n_grid = size(image_data, 1);
 					continue;
 				end
 
 			% if there is more than one second_dot, choose the one that is the closest from the chosen dot
-            elseif length(range_id) > 1
+      elseif length(range_id) > 1
 
 				second_dots = image_data(range_id, :);
 
 				% if the current dot is on the target
-				if this_dot(9) > 0	
-					second_dots = second_dots(second_dots(:, 9) == 0 & second_dots(:, 10) ~= this_dot(10), :);
+				if this_dot(7) > 0
+					second_dots = second_dots(second_dots(:, 7) == 0 & second_dots(:, 8) ~= this_dot(8), :);
 
 					if size(second_dots, 1) == 1
 						second_dot = second_dots;
-                        
-                    elseif size(second_dots, 1) > 1
 
-						% second_dots_sp_diff = sqrt((second_dots(:, 3) - this_dot(3)).^2 + (second_dots(:, 4) - this_dot(4)).^2);
-		                % second_dot = second_dots(second_dots_sp_diff == max(second_dots_sp_diff), :);
-		                second_dots_dist = sqrt((second_dots(:, 1) - this_dot(:, 1)).^2 + (second_dots(:, 2) - this_dot(:, 2)).^2);
-		                second_dot = second_dots(second_dots_dist == min(second_dots_dist), :);
+          elseif size(second_dots, 1) > 1
 
-                		if size(second_dot, 1) > 1
-							% second_dot_dist = sqrt( (second_dot(:, 1) - this_dot(1)).^2  + (second_dot(:, 2) - this_dot(2)).^2 );
-		                    % second_dot = second_dot(second_dot_dist == min(second_dot_dist), :);
-		                    second_dot_sp_diff =  sqrt((second_dot(:, 3) - this_dot(3)).^2 + (second_dot(:, 4) - this_dot(4)).^2);
-		                    second_dot = second_dot(second_dot_sp_diff == max(second_dot_sp_diff), :);
-	                    end
-                    end
+            second_dots_dist = sqrt((second_dots(:, 1) - this_dot(:, 1)).^2 + (second_dots(:, 2) - this_dot(:, 2)).^2);
+            second_dot = second_dots(second_dots_dist == min(second_dots_dist), :);
 
-                elseif this_dot(9) == 0
-                    
-                    second_dots = second_dots(second_dots(:, 10) ~= this_dot(10), :);
+            if size(second_dot, 1) > 1
+              second_dot_sp_diff =  sqrt((second_dot(:, 3) - this_dot(3)).^2 + (second_dot(:, 4) - this_dot(4)).^2);
+              second_dot = second_dot(second_dot_sp_diff == max(second_dot_sp_diff), :);
+            end
+          end
 
-	                % second_dots_sp_diff = sqrt((second_dots(:, 3) - this_dot(3)).^2 + (second_dots(:, 4) - this_dot(4)).^2);
-	                % second_dot = second_dots(second_dots_sp_diff == max(second_dots_sp_diff), :);
-	                second_dots_dist = sqrt((second_dots(:, 1) - this_dot(:, 1)).^2 + (second_dots(:, 2) - this_dot(:, 2)).^2);
-	                second_dot = second_dots(second_dots_dist == min(second_dots_dist), :);
-				
+        elseif this_dot(7) == 0
+
+          second_dots = second_dots(second_dots(:, 8) ~= this_dot(8), :);
+
+          second_dots_dist = sqrt((second_dots(:, 1) - this_dot(:, 1)).^2 + (second_dots(:, 2) - this_dot(:, 2)).^2);
+          second_dot = second_dots(second_dots_dist == min(second_dots_dist), :);
+
 					if size(second_dot, 1) > 1
-	                    % second_dot_dist = sqrt( (second_dot(:, 1) - this_dot(1)).^2  + (second_dot(:, 2) - this_dot(2)).^2 );
-	                    % second_dot = second_dot(second_dot_dist == min(second_dot_dist), :);
-	                    second_dot_sp_diff =  sqrt((second_dot(:, 3) - this_dot(3)).^2 + (second_dot(:, 4) - this_dot(4)).^2);
-	                    second_dot = second_dot(second_dot_sp_diff == max(second_dot_sp_diff), :);
-	                end 
-                
-	                if size(second_dot, 1) > 1
-	                    second_dot = second_dot( randsample( size(second_dot, 1), 1), :);
-	                end
-	            end
+              second_dot_sp_diff =  sqrt((second_dot(:, 3) - this_dot(3)).^2 + (second_dot(:, 4) - this_dot(4)).^2);
+              second_dot = second_dot(second_dot_sp_diff == max(second_dot_sp_diff), :);
+          end
+
+          if size(second_dot, 1) > 1
+              second_dot = second_dot( randsample( size(second_dot, 1), 1), :);
+          end
+	      end
 
 			end
 
@@ -134,12 +127,12 @@ function differential_image_data = Cal_motion_parallax_local_differential_seq_ra
 		end
 
 		if ~isempty(second_dot)
-            differential_image_data = [differential_image_data; tmp_pair];
+      differential_image_data = [differential_image_data; tmp_pair];
 			second_dot_id = find(image_data(:, 1) == second_dot(1) & image_data(:, 2) == second_dot(2) & image_data(:, 3) == second_dot(3));
 			image_data(second_dot_id, :) = [];
 		end
 
 	    n_grid = size(image_data, 1);
 	end
-    
+
 end

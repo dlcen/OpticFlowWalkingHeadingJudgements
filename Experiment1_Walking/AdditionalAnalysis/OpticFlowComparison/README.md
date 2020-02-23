@@ -10,6 +10,8 @@
   - From the __translational field__, we calculated a __speed gradient__ on the speed of the flow vectors in the field.
   - From the __translational and rotational field__, we calculated the number of pairs of dots that could form __motion parallax__ for each virtual environment, according to the definition by [Longuet-Higgins & Prazdny, 1980](https://royalsocietypublishing.org/doi/abs/10.1098/rspb.1980.0057).
 
+`Batch_Calculation.m` runs the pipeline for all the virtual environments.
+
 ## Details of each step in the pipeline
 
 ### Dot sampling
@@ -18,12 +20,12 @@ For each virtual environment, there is a folder that includes the code for sampl
 #### Line
 ![sampling line condition](./Line/SampleDotsDemo.png)
 
-The visual dots are sampled along four edges of the image of target post projects on the 2D plane at the starting point (i.e., top, bottom, left and right).
+The visual dots are sampled along four edges of the image of target post projects on the 2D plane at the starting point (i.e., top, bottom, left and right). The dots are labeled according to the direction of the line (i.e., horizontal or vertical) that they are sampled from.
 
 #### Outline
 ![sampling outline condition](./Outline/SampleDotsDemo.png)
 
-The visual dots are sampled along the lines that constitute the whole outline of the room.
+The visual dots are sampled along the lines that constitute the whole outline of the room. As in the _Line_ condition, the dots are labeled according to the direction of the line (i.e., horizontal or vertical) that they are sampled from.
 
 #### Room
 ![sampling room condition](./Room/SampleDotsDemo.png)
@@ -72,3 +74,25 @@ To calculate a flow field for each virtual environment, movement of a viewer is 
   <p align="center">
     <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}&space;v_x&space;\\&space;v_y&space;\end{bmatrix}&space;=&space;\frac{1}{z_{dot}^2}&space;\begin{bmatrix}&space;x_{dot}T_z&space;-&space;z_{dot}T_x&space;&plus;&space;T_1P_F(x_{dot}^2&space;&plus;&space;z_{dot}^2)&space;\\&space;y_{dot}T_z&space;-&space;z_{dot}T_y&space;&plus;&space;T_xP_Fx_{dot}y_{dot}&space;\end{bmatrix}">
   </p>
+
+
+  ### Calculation of flow fields
+  `Cal_Flow_Info.m` calls `Cal_Image_Vectors` and calculates both the pure __translational flow field__ and __translational + rotational flow field__ for the specific virtual environment.
+
+  For sampled dots that are along a horizontal or vertical line in the _Line_ and _Outline_ conditions, their velocity is restricted to the direction perpendicular to the line.
+
+  Distribution of the magnitude of the velocity is plotted.
+
+  ### Calculation of __speed gradient__
+  `Cal_Quartiles.m` calculates the speed quartile for a specific condition. It is called in `Batch_Calculation.m`. The quartile data is saved in 'quartiles.csv', and then visualised in `PlotQuartiles.R`.
+
+  ### Calculation of __motion parallax__
+  Motion parallax is calculated and plotted by calling `Cal_motion_parallax_local_differential.m` in `Cal_Flow_Info.m`.
+
+  A searchlight method is used to find pairs of dots that can potentially form motion parallax in the field.
+
+  For a sampled dot, any dot with a distance shorter than the closeness threshold is considered as overlapping with the dot on the image plane, forming a potential pair of motion parallax dots. However, if the two dots are on the same depth, they will not be considered as a valid motion parallax dots. In addition, the motion parallax pairs between dots on the target post and dots on the other visual elements are not considered.
+
+  After determining the potential motion parallax dot pairs, vector difference between their image velocity is calculated for each pair. If the magnitude of the velocity difference is lower than a threshold (0.02m/s), the pair is not considered as a valid motion parallax pair.
+
+  

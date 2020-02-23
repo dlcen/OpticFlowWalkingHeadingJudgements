@@ -1,13 +1,13 @@
 
 % This function is to plot the distribution of magnitude of flow vectors on the x-axis and the motion parallax field
-% 
+%
 % INPUT:
 % 	thisCondition: the name of the condition in which the flow information will be calculated
 %   dev_ang: the deviation between the walking direction and the direction to the target
-% 
+%
 % OUTPUT:
 % 	image_data: an image velocity matrix, including the image location of each vector (x, y), the velocity on the x-axis and y-axis respectively and the magnitude of speed.
-% 				it also includes the noise of the speed and direction for each vector. 
+% 				it also includes the noise of the speed and direction for each vector.
 
 
 function Cal_Flow_Info(thisCondition, dev_ang)
@@ -41,17 +41,17 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 	image_data_Rt = Cal_Image_Vectors(dotPosition, Tr, pF, img_w, img_h);
 
 	%% Plot the distribution of magnitude of speed vectors as a function of x-axis
-	image_data_Tr(:, 11) = abs(atand(image_data_Tr(:, 3)));
+	image_data_Tr(:, 9) = abs(atand(image_data_Tr(:, 3)));
 
-	target_idx = find(image_data_Tr(:, 11) == 0 & image_data_Tr(:, 1) < 0.25/6 & image_data_Tr(:, 1) > -0.25/6);
+	target_idx = find(image_data_Tr(:, 9) == 0 & image_data_Tr(:, 1) < 0.25/6 & image_data_Tr(:, 1) > -0.25/6);
 
 	target_data = image_data_Tr(target_idx, :);
 	[scene_data, ~] = setdiff(image_data_Tr, target_data, 'rows');
 
 	figure
 	hold on
-	scatter3(atand(scene_data(:, 1)), atand(scene_data(:, 2)), scene_data(:, 11), 50, [.5 .5 .5], 'filled')
-	scatter3(atand(target_data(:, 1)), atand(target_data(:, 2)), target_data(:, 11), 50, [255/255, 191/255, 0], 'filled')
+	scatter3(atand(scene_data(:, 1)), atand(scene_data(:, 2)), scene_data(:, 9), 50, [.5 .5 .5], 'filled')
+	scatter3(atand(target_data(:, 1)), atand(target_data(:, 2)), target_data(:, 9), 50, [255/255, 191/255, 0], 'filled')
 	xlim([-img_w/2 img_w/2])
 	ylim([-img_h/2 img_h/2])
 	zlim([0 25])
@@ -86,7 +86,7 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 	quiver(atand(image_data_Rt(:, 1)), atand(image_data_Rt(:, 2)), scale * image_data_Rt(:, 3), scale * image_data_Rt(:, 4), 0, 'Color', [.5 .5 .5], 'MaxHeadSize', .1, 'LineWidth', 1)
 
 	if size(differential_data, 1) > 1
-	    quiver(atand(differential_data(:, 1)), atand(differential_data(:, 2)), scale * differential_data(:, 3), scale * differential_data(:, 4), 0, 'Color', 'r', 'MaxHeadSize', 1, 'LineWidth', 2.5) 
+	    quiver(atand(differential_data(:, 1)), atand(differential_data(:, 2)), scale * differential_data(:, 3), scale * differential_data(:, 4), 0, 'Color', 'r', 'MaxHeadSize', 1, 'LineWidth', 2.5)
 	end
 
 	gazeat = 0;
@@ -106,7 +106,3 @@ function Cal_Flow_Info(thisCondition, dev_ang)
 
 	savefig(['../', thisCondition, '/FlowAndMotionParallaxField'])
 	print(['../', thisCondition, '/FlowAndMotionParallaxField'], '-dsvg')
-
-
-
-

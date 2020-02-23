@@ -1,10 +1,10 @@
-% This function is to plot the distribution of magnitude of flow vectors on the x-axis and the motion parallax field
-% 
+% This function is to calculate the values of the speed quartile for a specific condition.
+%
 % INPUT:
-% 
+%
 %   thisCondition: the name of the condition
 %   eccentricity
-% 
+%
 % OUTPUT:
 %   values of the quartile
 
@@ -16,9 +16,9 @@ function [m, q] = Cal_Quartile(thisCondition, eccentricity, eccentricity_width, 
 	 	case 2
 	 		eccentricity_width = 0.5;
 	 		dev_ang = 10;
-		
+
 	end
-	
+
 	%% Set up the basic constant
 	dz = 1/37; % distance that the viewer has moved for the duration of one frame, starting from 6m from the target
 
@@ -30,7 +30,7 @@ function [m, q] = Cal_Quartile(thisCondition, eccentricity, eccentricity_width, 
 
 	target_distance = 6;
 	pF = 1/(target_distance - dz); % the distance to the target after one frame
-    
+
 	Tr = [sind(dev_ang), 0, cosd(dev_ang)]; % calculating the transitional component
 	Rr = [0, -pF*Tr(1), 0]; % calculating the rotational component
 
@@ -88,18 +88,3 @@ function [m, q] = Cal_Quartile(thisCondition, eccentricity, eccentricity_width, 
 		fprintf('There is only one dot within this eccentricity range.\n');
         fprintf('The speed magnitude of this data is: %.2f degree/s.\n', m);
     end
-    
-    
-    
-
-
-
-		
-
-
-
-
-
-
-	
-
