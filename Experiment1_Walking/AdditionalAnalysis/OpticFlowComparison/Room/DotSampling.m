@@ -116,7 +116,7 @@ room_dots_pos(idx, 4) = 1; % Label "1" as it is on a horizontal edge
 
 %% Check the sample dots in 3D space
 figure;
-scatter3(room_dots_pos(:, 1), room_dots_pos(:, 3), room_dots_pos(:, 2), 0.75, 'filled')
+scatter3(room_dots_pos(:, 1), room_dots_pos(:, 3), room_dots_pos(:, 2), 0.5, 'filled')
 
 %% Plot the sampled dots viewed from starting point ([0, 0]) at the height of 1.5m
 spv_x = room_dots_pos(:, 1)./room_dots_pos(:, 3);
@@ -124,7 +124,7 @@ spv_y = (room_dots_pos(:, 2) - 1.5)./room_dots_pos(:, 3);
 
 fh = figure('Menu','none','ToolBar','none');
 ah = axes('Units','Normalize','Position',[0 0 1 1]);
-scatter(atand(spv_x), atand(spv_y), 0.75, 'filled')
+scatter(atand(spv_x), atand(spv_y), 0.5, 'filled')
 xlim([-45 45])
 ylim([-25 25])
 set(gca,'XTick',[]);
@@ -159,7 +159,7 @@ dotPosition = dotPosition(dotPosition(:, 3) > 0, :);
 
 % Check the sample dots in 3D space
 figure;
-scatter3(dotPosition(:, 1), dotPosition(:, 3), dotPosition(:, 2), 0.75, 'filled')
+scatter3(dotPosition(:, 1), dotPosition(:, 3), dotPosition(:, 2), 0.5, 'filled')
 
 % Save the dot positions
 save('dotPosition', 'dotPosition')
